@@ -1,9 +1,9 @@
 1:"$Sreact.fragment"
 2:I[47257,["/criminal-procedure-deadline-platform/_next/static/chunks/158myu8e_yme3.js"],"ClientPageRoot"]
-3:I[31713,["/criminal-procedure-deadline-platform/_next/static/chunks/158myu8e_yme3.js","/criminal-procedure-deadline-platform/_next/static/chunks/220m3nnpnnq-t.js"],"default"]
+3:I[31713,["/criminal-procedure-deadline-platform/_next/static/chunks/158myu8e_yme3.js","/criminal-procedure-deadline-platform/_next/static/chunks/0y661ya4ktgbz.js"],"default"]
 6:I[97367,["/criminal-procedure-deadline-platform/_next/static/chunks/158myu8e_yme3.js"],"OutletBoundary"]
 7:"$Sreact.suspense"
-0:{"rsc":["$","$1","c",{"children":[["$","$L2",null,{"Component":"$3","serverProvidedParams":{"searchParams":{},"params":{},"promises":["$@4","$@5"]}}],[["$","script","script-0",{"src":"/criminal-procedure-deadline-platform/_next/static/chunks/220m3nnpnnq-t.js","async":true}]],["$","$L6",null,{"children":["$","$7",null,{"name":"Next.MetadataOutlet","children":"$@8"}]}]]}],"isPartial":false,"staleTime":300,"varyParams":null,"buildId":"1amNA9KKQFEbSxbFvO-dR"}
+0:{"rsc":["$","$1","c",{"children":[["$","$L2",null,{"Component":"$3","serverProvidedParams":{"searchParams":{},"params":{},"promises":["$@4","$@5"]}}],[["$","script","script-0",{"src":"/criminal-procedure-deadline-platform/_next/static/chunks/0y661ya4ktgbz.js","async":true}]],["$","$L6",null,{"children":["$","$7",null,{"name":"Next.MetadataOutlet","children":"$@8"}]}]]}],"isPartial":false,"staleTime":300,"varyParams":null,"buildId":"sb8uy2_Mxe76We1iXnzU_"}
 4:{}
 5:"$0:rsc:props:children:0:props:serverProvidedParams:params"
 8:null
