@@ -19,6 +19,8 @@ import { ProcedureGuide } from "./procedure-guide";
 
 type Tab = "cases" | "calculator" | "procedure" | "sources";
 
+const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
+
 const workPageTitles: Record<Exclude<Tab, "cases">, string> = {
   calculator: "程序期限",
   procedure: "程序说明",
@@ -249,7 +251,7 @@ export default function Home() {
   }, [workbench, hydrated, storageError]);
 
   useEffect(() => {
-    fetch("/legal/manifest.json").then((r) => { if (!r.ok) throw new Error(); return r.json(); }).then((docs: LegalDocument[]) => {
+    fetch(`${basePath}/legal/manifest.json`).then((r) => { if (!r.ok) throw new Error(); return r.json(); }).then((docs: LegalDocument[]) => {
       setLegalDocs(docs); setActiveLegalId((current) => current || docs[0]?.id || "");
     }).catch(() => setLegalDirectoryError("内置法律目录加载失败"));
   }, []);
@@ -319,7 +321,7 @@ export default function Home() {
         setLegalTextForId(activeLegal.id);
       }).catch(() => { if (!cancelled) { setLocalLegalObjectUrl(""); setLegalText("本地法律文件读取失败，请重新上传。"); setLegalTextForId(activeLegal.id); } });
     } else {
-      fetch(`/legal/${activeLegal.filename}`).then((r) => { if (!r.ok) throw new Error(); return r.text(); }).then((text) => { if (!cancelled) { setLocalLegalObjectUrl(""); setLegalText(text); setLegalTextForId(activeLegal.id); } }).catch(() => { if (!cancelled) { setLocalLegalObjectUrl(""); setLegalText("法律文本加载失败，请刷新后重试。"); setLegalTextForId(activeLegal.id); } });
+      fetch(`${basePath}/legal/${activeLegal.filename}`).then((r) => { if (!r.ok) throw new Error(); return r.text(); }).then((text) => { if (!cancelled) { setLocalLegalObjectUrl(""); setLegalText(text); setLegalTextForId(activeLegal.id); } }).catch(() => { if (!cancelled) { setLocalLegalObjectUrl(""); setLegalText("法律文本加载失败，请刷新后重试。"); setLegalTextForId(activeLegal.id); } });
     }
     return () => { cancelled = true; if (objectUrl) URL.revokeObjectURL(objectUrl); };
   }, [activeLegal]);

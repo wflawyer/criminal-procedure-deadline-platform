@@ -1,10 +1,12 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 
+const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
+
 export const metadata: Metadata = {
   title: "刑事诉讼程序与期限管理平台",
   description: "贯通侦查、审查起诉、一二审、申诉再审和执行，并支持被害人、犯罪嫌疑人及辩护人视角的刑事诉讼期限管理平台。",
-  icons: { icon: "/favicon.svg" },
+  icons: { icon: `${basePath}/favicon.svg` },
 };
 
 export const viewport: Viewport = {

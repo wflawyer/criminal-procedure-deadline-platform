@@ -8,6 +8,7 @@
   "scripts": {
     "dev": "WRANGLER_LOG_PATH=.wrangler/wrangler.log vinext dev",
     "build": "WRANGLER_LOG_PATH=.wrangler/wrangler.log vinext build",
+    "pages:build": "GITHUB_PAGES=true NEXT_PUBLIC_BASE_PATH=/criminal-procedure-deadline-platform next build",
     "start": "WRANGLER_LOG_PATH=.wrangler/wrangler.log vinext start",
     "test": "npm run typecheck && npm run build && node --experimental-strip-types --test tests/deadlines.test.ts tests/case-projects.test.ts tests/role-views.test.ts tests/procedure-catalog.test.ts && node --test tests/rendered-html.test.mjs tests/legal-corpus.test.mjs",
     "skill:test": "node --experimental-strip-types --test codex-skill/calculate-criminal-deadlines/scripts/test-deadline-cli.mjs",
