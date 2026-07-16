@@ -4,7 +4,7 @@ import { buildDeadlines, getDefaultInputs, parseLocalDate } from "../lib/deadlin
 import { filterDeadlinesByRoleScope, getRoleStats, isRoleFocus, roleViewConfigs } from "../lib/role-views.ts";
 
 test("三类角色具有不同的首页说明和录入策略", () => {
-  assert.equal(roleViewConfigs.victimAgent.headline, "掌握办案期限，及时行使被害人权利");
+  assert.equal(roleViewConfigs.victimAgent.headline, "让诉讼程序和节点可视化");
   assert.equal(roleViewConfigs.suspectDefendant.headline, "掌握羁押期限，及时行使诉讼权利");
   assert.equal(roleViewConfigs.defender.headline, "掌握程序期限，及时开展辩护工作");
   assert.ok(Object.values(roleViewConfigs).every((config) => !config.headline.includes("\n")));

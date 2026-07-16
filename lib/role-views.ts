@@ -17,7 +17,7 @@ export type RoleViewConfig = {
 export const roleViewConfigs: Record<CasePerspective, RoleViewConfig> = {
   victimAgent: {
     eyebrow: "机关办理期限 · 被害人救济窗口 · 损失追偿",
-    headline: "掌握办案期限，及时行使被害人权利",
+    headline: "让诉讼程序和节点可视化",
     description: "默认呈现报案受理、伤情鉴定、刑事立案监督、审查起诉、不起诉申诉、请求抗诉和附带民事等被害人真正需要采取行动的节点。",
     assessment: "重点监测公安、检察院和法院是否按期办理，并防止7日申诉、5日请求抗诉等短期权利窗口失效。",
     inputTitle: "被害人案件关键时间",

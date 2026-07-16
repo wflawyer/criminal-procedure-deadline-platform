@@ -24,7 +24,7 @@ test("服务端输出以案件库为主页的刑事诉讼平台首屏", async ()
   assert.match(html, /class="site-header"/);
   assert.match(html, /class="hero role-hero/);
   assert.match(html, /刑事案件库/);
-  assert.match(html, /掌握办案期限，及时行使被害人权利/);
+  assert.match(html, /让诉讼程序和节点可视化/);
   assert.match(html, /程序向前推进，期限同步更新/);
   assert.match(html, /程序期限/);
   assert.match(html, /程序说明/);
