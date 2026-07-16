@@ -1,0 +1,45 @@
+{
+  "name": "criminal-procedure-deadline-platform",
+  "version": "0.1.0",
+  "private": true,
+  "engines": {
+    "node": ">=22.13.0"
+  },
+  "scripts": {
+    "dev": "WRANGLER_LOG_PATH=.wrangler/wrangler.log vinext dev",
+    "build": "WRANGLER_LOG_PATH=.wrangler/wrangler.log vinext build",
+    "start": "WRANGLER_LOG_PATH=.wrangler/wrangler.log vinext start",
+    "test": "npm run typecheck && npm run build && node --experimental-strip-types --test tests/deadlines.test.ts tests/case-projects.test.ts tests/role-views.test.ts tests/procedure-catalog.test.ts && node --test tests/rendered-html.test.mjs tests/legal-corpus.test.mjs",
+    "skill:test": "node --experimental-strip-types --test codex-skill/calculate-criminal-deadlines/scripts/test-deadline-cli.mjs",
+    "skill:verify": "node --experimental-strip-types codex-skill/calculate-criminal-deadlines/scripts/deadline-cli.mjs verify-corpus --format json",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint . --ignore-pattern dist --ignore-pattern .next",
+    "legal:build": "python3 scripts/build_legal_corpus.py"
+  },
+  "dependencies": {
+    "next": "16.2.10",
+    "react": "19.2.7",
+    "react-dom": "19.2.7"
+  },
+  "devDependencies": {
+    "@cloudflare/vite-plugin": "1.44.0",
+    "@tailwindcss/postcss": "4.2.1",
+    "@types/node": "22.19.19",
+    "@types/react": "19.2.17",
+    "@types/react-dom": "19.2.3",
+    "@vitejs/plugin-react": "6.0.3",
+    "@vitejs/plugin-rsc": "0.5.27",
+    "eslint": "9.39.4",
+    "eslint-config-next": "16.2.10",
+    "react-server-dom-webpack": "19.2.7",
+    "tailwindcss": "4.2.1",
+    "typescript": "5.9.3",
+    "vinext": "0.0.50",
+    "vite": "8.1.4",
+    "wrangler": "4.110.0"
+  },
+  "overrides": {
+    "postcss": "8.5.14"
+  },
+  "type": "module"
+}

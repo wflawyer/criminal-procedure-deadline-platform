@@ -1,0 +1,4 @@
+interface:
+  display_name: "刑事诉讼期限管理"
+  short_description: "确定性计算刑事程序期限、校验日期冲突并生成角色化行动报告"
+  default_prompt: "使用 $calculate-criminal-deadlines 根据脱敏案件节点计算期限并生成角色化行动报告。"
