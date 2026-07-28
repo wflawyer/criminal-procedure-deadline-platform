@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <rect width="1200" height="630" fill="#f2f2f0"/>
+  <rect x="36" y="36" width="1128" height="558" rx="34" fill="#ffffff" stroke="#dfdfdc"/>
+
+  <text x="90" y="104" fill="#737370" font-family="SFMono-Regular, Menlo, monospace" font-size="14" letter-spacing="2">LEXA·I / LEGAL INTELLIGENCE</text>
+  <text x="90" y="245" fill="#111111" font-family="PingFang SC, Noto Sans CJK SC, sans-serif" font-size="76" font-weight="600">法律工作，</text>
+  <text x="90" y="344" fill="#777774" font-family="PingFang SC, Noto Sans CJK SC, sans-serif" font-size="76" font-weight="600">清晰一点。</text>
+  <text x="90" y="413" fill="#6c6c69" font-family="PingFang SC, Noto Sans CJK SC, sans-serif" font-size="20">程序、证据与规范，在一处清晰展开。</text>
+
+  <rect x="90" y="472" width="218" height="62" rx="31" fill="#111111"/>
+  <text x="122" y="511" fill="#ffffff" font-family="PingFang SC, Noto Sans CJK SC, sans-serif" font-size="17" font-weight="600">法律智能工作系统</text>
+
+  <rect x="737" y="82" width="366" height="466" rx="28" fill="#f3f3f1" stroke="#dfdfdc"/>
+  <text x="772" y="127" fill="#747471" font-family="SFMono-Regular, Menlo, monospace" font-size="12" letter-spacing="2">WORKFLOW</text>
+  <text x="772" y="160" fill="#111111" font-family="PingFang SC, Noto Sans CJK SC, sans-serif" font-size="22" font-weight="600">一个清晰的工作流</text>
+
+  <g font-family="PingFang SC, Noto Sans CJK SC, sans-serif">
+    <rect x="762" y="191" width="316" height="67" rx="18" fill="#ffffff" stroke="#e1e1de"/>
+    <circle cx="797" cy="225" r="17" fill="#111111"/>
+    <text x="788" y="230" fill="#ffffff" font-size="10">01</text>
+    <text x="829" y="221" fill="#111111" font-size="17" font-weight="600">事实</text>
+    <text x="829" y="242" fill="#777774" font-size="12">整理案件材料</text>
+
+    <rect x="762" y="270" width="316" height="67" rx="18" fill="#ffffff" stroke="#e1e1de"/>
+    <circle cx="797" cy="304" r="17" fill="#111111"/>
+    <text x="788" y="309" fill="#ffffff" font-size="10">02</text>
+    <text x="829" y="300" fill="#111111" font-size="17" font-weight="600">规范</text>
+    <text x="829" y="321" fill="#777774" font-size="12">定位法律依据</text>
+
+    <rect x="762" y="349" width="316" height="67" rx="18" fill="#ffffff" stroke="#e1e1de"/>
+    <circle cx="797" cy="383" r="17" fill="#111111"/>
+    <text x="788" y="388" fill="#ffffff" font-size="10">03</text>
+    <text x="829" y="379" fill="#111111" font-size="17" font-weight="600">行动</text>
+    <text x="829" y="400" fill="#777774" font-size="12">明确程序节点</text>
+
+    <rect x="762" y="428" width="316" height="67" rx="18" fill="#ffffff" stroke="#e1e1de"/>
+    <circle cx="797" cy="462" r="17" fill="#111111"/>
+    <text x="788" y="467" fill="#ffffff" font-size="10">04</text>
+    <text x="829" y="458" fill="#111111" font-size="17" font-weight="600">判断</text>
+    <text x="829" y="479" fill="#777774" font-size="12">由法律人完成</text>
+  </g>
+</svg>
