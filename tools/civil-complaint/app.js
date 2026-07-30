@@ -1,8 +1,18 @@
 (() => {
     "use strict";
 
-    const VERSION = "2.9.0";
+    const VERSION = "2.10.0";
     const DRAFT_KEY = "civil_complaint_element_form_v2";
+    const DEFAULT_FORM_VALUES = {
+        other_costs: "无",
+        mediation_awareness: "了解",
+        mediation_choice: "no",
+        mediation_benefit_1: "了解",
+        mediation_benefit_2: "了解",
+        mediation_benefit_3: "了解",
+        mediation_benefit_4: "了解",
+        mediation_benefit_5: "了解"
+    };
 
     const ORGANIZATION_TYPES = [
         "",
@@ -78,6 +88,7 @@
 
     function init() {
         populateSelectOptions();
+        applyDefaultFormValues();
         bindEvents();
         syncConditionalFields();
         renderPreview();
@@ -107,6 +118,13 @@
             option.value = value;
             option.textContent = index === 0 ? emptyLabel : value;
             select.appendChild(option);
+        });
+    }
+
+    function applyDefaultFormValues() {
+        Object.entries(DEFAULT_FORM_VALUES).forEach(([id, value]) => {
+            const control = $(id);
+            if (control && !control.value) control.value = value;
         });
     }
 
@@ -619,8 +637,7 @@
             if (!control) return;
             if (control.type === "checkbox") control.checked = false;
             else if (id.endsWith("_kind")) control.value = "natural";
-            else if (id === "other_costs") control.value = "无";
-            else control.value = "";
+            else control.value = DEFAULT_FORM_VALUES[id] || "";
         });
         if (!preserveSource) $("sourceText").value = "";
         $("parseSummary").hidden = true;
@@ -664,7 +681,7 @@
                 const control = $(id);
                 if (!control) return;
                 if (control.type === "checkbox") control.checked = !!value;
-                else control.value = id === "other_costs" ? (value || "无") : (value || "");
+                else control.value = value || DEFAULT_FORM_VALUES[id] || "";
             });
             syncConditionalFields();
             renderPreview();
