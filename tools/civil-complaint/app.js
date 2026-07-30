@@ -1,7 +1,7 @@
 (() => {
     "use strict";
 
-    const VERSION = "2.7.0";
+    const VERSION = "2.8.0";
     const DRAFT_KEY = "civil_complaint_element_form_v2";
 
     const ORGANIZATION_TYPES = [
@@ -480,15 +480,48 @@
     }
 
     function extractOtherCosts(claims) {
-        return normalizeText(claims)
+        const costLines = normalizeText(claims)
             .split("\n")
-            .filter((line) => /(诉讼费|案件受理费|鉴定费|保全费)/.test(line))
-            .join("\n");
+            .map((line) => line.trim())
+            .filter((line) => /(诉讼费|诉讼费用|案件受理费|鉴定费|保全费)/.test(line))
+            .filter((line) => !/(?:由|归).{0,16}(?:原告|被告|双方|各方).{0,8}(?:承担|负担)|(?:原告|被告|双方|各方).{0,8}(?:承担|负担)|(?:承担|负担).{0,12}(?:诉讼费|诉讼费用|案件受理费|鉴定费|保全费)/.test(line))
+            .filter((line) => /(?:人民币|￥|¥)?\s*[\d,]+(?:\.\d+)?\s*(?:万)?元/.test(line));
+        return costLines.join("\n") || "无";
     }
 
     function extractSubjectAmount(claims) {
-        const explicit = claims.match(/(?:标的总额|合计)\s*[：:]?\s*(?:人民币)?\s*([\d,]+(?:\.\d+)?)\s*元/);
-        return explicit ? `${explicit[1].replace(/,/g, "")}元` : "";
+        const normalized = normalizeText(claims);
+        let totalCents = 0;
+        const moneyPattern = /(?:人民币|￥|¥)?\s*([\d,]+(?:\.\d+)?)\s*(万)?元/g;
+
+        normalized
+            .split("\n")
+            .map((line) => line.trim())
+            .filter(Boolean)
+            .filter((line) => !/(?:诉讼费|诉讼费用|案件受理费).{0,20}(?:承担|负担)|(?:承担|负担).{0,20}(?:诉讼费|诉讼费用|案件受理费)/.test(line))
+            .forEach((line) => {
+                for (const match of line.matchAll(moneyPattern)) {
+                    const before = line.slice(Math.max(0, match.index - 18), match.index);
+                    const after = line.slice(match.index + match[0].length, match.index + match[0].length + 10);
+                    if (/(?:标的总额|合计|共计|总计)\s*[：:]?\s*(?:人民币)?\s*$/.test(before)) continue;
+                    if (/(?:以|按|按照).{0,15}(?:本金|款项|金额)?\s*$/.test(before) && /(?:为|作为)?基数/.test(after)) continue;
+                    if (/^(?:为|作为)?基数/.test(after)) continue;
+                    const amount = Number(match[1].replace(/,/g, "")) * (match[2] ? 10000 : 1);
+                    if (Number.isFinite(amount) && amount > 0) totalCents += Math.round(amount * 100);
+                }
+            });
+
+        if (totalCents > 0) return formatAmountFromCents(totalCents);
+        const explicit = normalized.match(/(?:标的总额|合计)\s*[：:]?\s*(?:人民币)?\s*([\d,]+(?:\.\d+)?)\s*(万)?元/);
+        if (!explicit) return "";
+        const explicitAmount = Number(explicit[1].replace(/,/g, "")) * (explicit[2] ? 10000 : 1);
+        return Number.isFinite(explicitAmount) ? formatAmountFromCents(Math.round(explicitAmount * 100)) : "";
+    }
+
+    function formatAmountFromCents(cents) {
+        const whole = Math.trunc(cents / 100);
+        const fraction = cents % 100;
+        return `${whole}${fraction ? `.${String(fraction).padStart(2, "0").replace(/0$/, "")}` : ""}元`;
     }
 
     function partyHasData(party) {
@@ -586,6 +619,7 @@
             if (!control) return;
             if (control.type === "checkbox") control.checked = false;
             else if (id.endsWith("_kind")) control.value = "natural";
+            else if (id === "other_costs") control.value = "无";
             else control.value = "";
         });
         if (!preserveSource) $("sourceText").value = "";
@@ -630,7 +664,7 @@
                 const control = $(id);
                 if (!control) return;
                 if (control.type === "checkbox") control.checked = !!value;
-                else control.value = value || "";
+                else control.value = id === "other_costs" ? (value || "无") : (value || "");
             });
             syncConditionalFields();
             renderPreview();
@@ -758,19 +792,17 @@
                     </tr>
                     <tr class="r-claims-text">
                         <td colspan="2">
-                            <p class="claim-note">（可完整表述诉讼请求；为方便、准确梳理要点，相关内容请在下方要素式表格中填写）</p>
                             <div class="free-text">${valueWithBreaks(data.claims)}</div>
                         </td>
                     </tr>
                     <tr class="r-cost">
                         <td>1.其他费用</td>
-                        <td>${displayValue(data.other_costs || "（诉讼费、鉴定费等）")}</td>
+                        <td>${displayValue(data.other_costs || "无")}</td>
                     </tr>
                     <tr class="r-cost">
                         <td>2.标的总额</td>
                         <td>${displayValue(data.subject_amount)}</td>
                     </tr>
-                    <tr class="r-pre-heading"><td colspan="2" class="section-title">诉前保全及鉴定申请</td></tr>
                 </table>
             </article>
         `;
@@ -784,6 +816,7 @@
                         <col class="label-column">
                         <col class="content-column">
                     </colgroup>
+                    <tr class="r-pre-heading"><td colspan="2" class="section-title">诉前保全及鉴定申请</td></tr>
                     <tr class="r-preservation">
                         <td class="label-cell">1. 是否已经诉前保全</td>
                         <td class="content-cell info-lines">
@@ -1285,13 +1318,11 @@
                 cantSplit: true,
                 height: { value: cm(5.05), rule: HeightRule.ATLEAST },
                 children: [cell([
-                    paragraph("（可完整表述诉讼请求；为方便、准确梳理要点，相关内容请在下方要素式表格中填写）", { size: 20, line: 285 }),
                     paragraph(data.claims || "", { size: 21, line: 315 })
                 ], { colSpan: 2, width: tableWidth })]
             }),
-            row("1.其他费用", data.other_costs || "（诉讼费、鉴定费等）", 0.68, { leftAlignment: AlignmentType.LEFT, leftSize: 21, rightSize: 21, exact: true }),
-            row("2.标的总额", data.subject_amount || "", 0.68, { leftAlignment: AlignmentType.LEFT, leftSize: 21, rightSize: 21, exact: true }),
-            row("诉前保全及鉴定申请", "", 0.84, { full: true, size: 31, bold: true, alignment: AlignmentType.CENTER, verticalAlign: VerticalAlign.CENTER, exact: true })
+            row("1.其他费用", data.other_costs || "无", 0.68, { leftAlignment: AlignmentType.LEFT, leftSize: 21, rightSize: 21, exact: true }),
+            row("2.标的总额", data.subject_amount || "", 0.68, { leftAlignment: AlignmentType.LEFT, leftSize: 21, rightSize: 21, exact: true })
         ];
         const page3Table = table(page3Rows);
 
@@ -1311,6 +1342,7 @@
         ].join("\n");
 
         const page4Table = table([
+            row("诉前保全及鉴定申请", "", 0.84, { full: true, size: 31, bold: true, alignment: AlignmentType.CENTER, verticalAlign: VerticalAlign.CENTER, exact: true }),
             row("1. 是否已经诉前保全", preservationPlain(data), 2.95, { leftAlignment: AlignmentType.LEFT, leftSize: 23, rightSize: 21, rightLine: 310 }),
             row("2. 是否申请鉴定", appraisalPlain(data), 1.27, { leftAlignment: AlignmentType.LEFT, leftSize: 23, rightSize: 21, rightLine: 305 }),
             row("事实与理由", "", 0.85, { full: true, size: 32, bold: true, alignment: AlignmentType.CENTER, verticalAlign: VerticalAlign.CENTER, exact: true }),
