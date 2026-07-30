@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="light">
+    <title>要素式诉状转换工具｜LEXA·I</title>
+    <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="./app.css?v=2.7.0">
+</head>
+<body>
+    <a class="lexa-back-link" href="../../platforms/">← 返回 LEXA·I 法律工具</a>
+    <header class="app-header">
+        <div>
+            <p class="eyebrow">本地处理 · 不上传案件材料</p>
+            <h1>要素式诉状转换工具</h1>
+            <p class="header-note">导入现有诉状，按要素结构识别、核对并生成可编辑 DOCX</p>
+        </div>
+        <div class="reference-pill" aria-label="模板信息">
+            <span>输出格式</span>
+            <strong>A4 · 4页</strong>
+        </div>
+    </header>
+
+    <main class="app-shell">
+        <section class="workbench" aria-label="文书录入与编辑">
+            <aside class="source-panel card">
+                <div class="section-heading">
+                    <div>
+                        <p class="step">步骤 1</p>
+                        <h2>导入文书原文</h2>
+                    </div>
+                    <span class="privacy-badge">仅本机</span>
+                </div>
+
+                <label class="file-drop" for="sourceFile">
+                    <strong>选择 TXT 或 DOCX</strong>
+                    <span>DOCX 仅提取正文文字，不上传文件</span>
+                    <input id="sourceFile" type="file" accept=".txt,.docx,text/plain,application/vnd.openxmlformats-officedocument.wordprocessingml.document">
+                </label>
+
+                <label class="field-label" for="sourceText">或粘贴待转换正文</label>
+                <textarea id="sourceText" class="source-text" placeholder="请粘贴包含原告、被告、诉讼请求、事实与理由的文书正文……"></textarea>
+
+                <div class="button-row">
+                    <button id="parseButton" class="button primary" type="button">识别并填入</button>
+                    <button id="clearButton" class="button quiet" type="button">清空</button>
+                </div>
+                <div class="button-row compact">
+                    <button id="saveDraftButton" class="button text" type="button">保存本地草稿</button>
+                    <button id="loadDraftButton" class="button text" type="button">恢复草稿</button>
+                </div>
+                <div id="status" class="status" role="status" aria-live="polite"></div>
+                <div id="parseSummary" class="parse-summary" hidden></div>
+            </aside>
+
+            <section class="edit-panel card">
+                <div class="section-heading sticky-heading">
+                    <div>
+                        <p class="step">步骤 2</p>
+                        <h2>核对要素</h2>
+                    </div>
+                    <span id="completionBadge" class="completion-badge">0 项已填写</span>
+                </div>
+
+                <details open>
+                    <summary>基本信息</summary>
+                    <div class="form-grid">
+                        <label class="form-field span-2">
+                            <span>纠纷类型</span>
+                            <input id="dispute_type" type="text" placeholder="如：民间借贷纠纷、离婚后财产纠纷">
+                        </label>
+                        <label class="form-field">
+                            <span>受诉法院（供核对）</span>
+                            <input id="court_name" type="text">
+                        </label>
+                        <label class="form-field">
+                            <span>具状日期</span>
+                            <input id="filing_date" type="text" placeholder="YYYY年M月D日">
+                        </label>
+                    </div>
+                </details>
+
+                <details open>
+                    <summary>原告</summary>
+                    <div class="form-grid">
+                        <label class="form-field">
+                            <span>主体类型</span>
+                            <select id="plaintiff_kind">
+                                <option value="natural">自然人</option>
+                                <option value="organization">法人、非法人组织</option>
+                            </select>
+                        </label>
+                    </div>
+                    <div data-party="plaintiff" data-kind="natural" class="kind-fields">
+                        <div class="form-grid">
+                            <label class="form-field"><span>姓名</span><input id="plaintiff_name" type="text"></label>
+                            <label class="form-field"><span>性别</span><select id="plaintiff_gender"><option value="">未选择</option><option>男</option><option>女</option></select></label>
+                            <label class="form-field"><span>出生日期</span><input id="plaintiff_birth" type="text" placeholder="YYYY年M月D日"></label>
+                            <label class="form-field"><span>民族</span><input id="plaintiff_ethnicity" type="text"></label>
+                            <label class="form-field"><span>工作单位</span><input id="plaintiff_work_unit" type="text"></label>
+                            <label class="form-field"><span>职务</span><input id="plaintiff_position" type="text"></label>
+                            <label class="form-field"><span>联系电话</span><input id="plaintiff_phone" type="text"></label>
+                            <label class="form-field"><span>证件类型</span><input id="plaintiff_id_type" type="text" placeholder="居民身份证"></label>
+                            <label class="form-field span-2"><span>住所地（户籍所在地）</span><input id="plaintiff_address" type="text"></label>
+                            <label class="form-field span-2"><span>经常居住地</span><input id="plaintiff_residence" type="text"></label>
+                            <label class="form-field span-2"><span>证件号码</span><input id="plaintiff_id" type="text"></label>
+                        </div>
+                    </div>
+                    <div data-party="plaintiff" data-kind="organization" class="kind-fields" hidden>
+                        <div class="form-grid">
+                            <label class="form-field span-2"><span>名称</span><input id="plaintiff_org_name" type="text"></label>
+                            <label class="form-field span-2"><span>住所地（主要办事机构所在地）</span><input id="plaintiff_org_address" type="text"></label>
+                            <label class="form-field span-2"><span>注册地／登记地</span><input id="plaintiff_org_registered" type="text"></label>
+                            <label class="form-field"><span>法定代表人／负责人</span><input id="plaintiff_org_representative" type="text"></label>
+                            <label class="form-field"><span>职务</span><input id="plaintiff_org_position" type="text"></label>
+                            <label class="form-field"><span>联系电话</span><input id="plaintiff_org_phone" type="text"></label>
+                            <label class="form-field"><span>统一社会信用代码</span><input id="plaintiff_org_credit_code" type="text"></label>
+                            <label class="form-field"><span>组织类型</span><select id="plaintiff_org_type"></select></label>
+                            <label class="form-field"><span>所有制性质</span><select id="plaintiff_org_ownership"></select></label>
+                        </div>
+                    </div>
+                </details>
+
+                <details>
+                    <summary>委托诉讼代理人</summary>
+                    <label class="toggle-row">
+                        <input id="has_attorney" type="checkbox">
+                        <span>本案有委托诉讼代理人</span>
+                    </label>
+                    <div id="attorneyFields" class="form-grid muted-section" hidden>
+                        <label class="form-field"><span>姓名</span><input id="attorney_name" type="text"></label>
+                        <label class="form-field"><span>单位</span><input id="attorney_unit" type="text"></label>
+                        <label class="form-field"><span>职务</span><input id="attorney_position" type="text"></label>
+                        <label class="form-field"><span>联系电话</span><input id="attorney_phone" type="text"></label>
+                        <label class="form-field"><span>代理权限</span><select id="attorney_authority"><option value="">未选择</option><option>一般授权</option><option>特别授权</option></select></label>
+                    </div>
+                </details>
+
+                <details open>
+                    <summary>被告</summary>
+                    <div class="form-grid">
+                        <label class="form-field">
+                            <span>主体类型</span>
+                            <select id="defendant_kind">
+                                <option value="natural">自然人</option>
+                                <option value="organization">法人、非法人组织</option>
+                            </select>
+                        </label>
+                    </div>
+                    <div data-party="defendant" data-kind="natural" class="kind-fields">
+                        <div class="form-grid">
+                            <label class="form-field"><span>姓名</span><input id="defendant_name" type="text"></label>
+                            <label class="form-field"><span>性别</span><select id="defendant_gender"><option value="">未选择</option><option>男</option><option>女</option></select></label>
+                            <label class="form-field"><span>出生日期</span><input id="defendant_birth" type="text" placeholder="YYYY年M月D日"></label>
+                            <label class="form-field"><span>民族</span><input id="defendant_ethnicity" type="text"></label>
+                            <label class="form-field"><span>工作单位</span><input id="defendant_work_unit" type="text"></label>
+                            <label class="form-field"><span>职务</span><input id="defendant_position" type="text"></label>
+                            <label class="form-field"><span>联系电话</span><input id="defendant_phone" type="text"></label>
+                            <label class="form-field"><span>证件类型</span><input id="defendant_id_type" type="text" placeholder="居民身份证"></label>
+                            <label class="form-field span-2"><span>住所地（户籍所在地）</span><input id="defendant_address" type="text"></label>
+                            <label class="form-field span-2"><span>经常居住地</span><input id="defendant_residence" type="text"></label>
+                            <label class="form-field span-2"><span>证件号码</span><input id="defendant_id" type="text"></label>
+                        </div>
+                    </div>
+                    <div data-party="defendant" data-kind="organization" class="kind-fields" hidden>
+                        <div class="form-grid">
+                            <label class="form-field span-2"><span>名称</span><input id="defendant_org_name" type="text"></label>
+                            <label class="form-field span-2"><span>住所地（主要办事机构所在地）</span><input id="defendant_org_address" type="text"></label>
+                            <label class="form-field span-2"><span>注册地／登记地</span><input id="defendant_org_registered" type="text"></label>
+                            <label class="form-field"><span>法定代表人／负责人</span><input id="defendant_org_representative" type="text"></label>
+                            <label class="form-field"><span>职务</span><input id="defendant_org_position" type="text"></label>
+                            <label class="form-field"><span>联系电话</span><input id="defendant_org_phone" type="text"></label>
+                            <label class="form-field"><span>统一社会信用代码</span><input id="defendant_org_credit_code" type="text"></label>
+                            <label class="form-field"><span>组织类型</span><select id="defendant_org_type"></select></label>
+                            <label class="form-field"><span>所有制性质</span><select id="defendant_org_ownership"></select></label>
+                        </div>
+                    </div>
+                </details>
+
+                <details>
+                    <summary>第三人</summary>
+                    <label class="toggle-row">
+                        <input id="has_third_party" type="checkbox">
+                        <span>本案有第三人</span>
+                    </label>
+                    <div id="thirdPartyFields" class="muted-section" hidden>
+                        <div class="form-grid">
+                            <label class="form-field"><span>主体类型</span><select id="third_party_kind"><option value="natural">自然人</option><option value="organization">法人、非法人组织</option></select></label>
+                        </div>
+                        <div data-party="third_party" data-kind="natural" class="kind-fields">
+                            <div class="form-grid">
+                                <label class="form-field"><span>姓名</span><input id="third_party_name" type="text"></label>
+                                <label class="form-field"><span>性别</span><select id="third_party_gender"><option value="">未选择</option><option>男</option><option>女</option></select></label>
+                                <label class="form-field"><span>出生日期</span><input id="third_party_birth" type="text"></label>
+                                <label class="form-field"><span>民族</span><input id="third_party_ethnicity" type="text"></label>
+                                <label class="form-field"><span>工作单位</span><input id="third_party_work_unit" type="text"></label>
+                                <label class="form-field"><span>职务</span><input id="third_party_position" type="text"></label>
+                                <label class="form-field"><span>联系电话</span><input id="third_party_phone" type="text"></label>
+                                <label class="form-field"><span>证件类型</span><input id="third_party_id_type" type="text"></label>
+                                <label class="form-field span-2"><span>住所地（户籍所在地）</span><input id="third_party_address" type="text"></label>
+                                <label class="form-field span-2"><span>经常居住地</span><input id="third_party_residence" type="text"></label>
+                                <label class="form-field span-2"><span>证件号码</span><input id="third_party_id" type="text"></label>
+                            </div>
+                        </div>
+                        <div data-party="third_party" data-kind="organization" class="kind-fields" hidden>
+                            <div class="form-grid">
+                                <label class="form-field span-2"><span>名称</span><input id="third_party_org_name" type="text"></label>
+                                <label class="form-field span-2"><span>住所地（主要办事机构所在地）</span><input id="third_party_org_address" type="text"></label>
+                                <label class="form-field span-2"><span>注册地／登记地</span><input id="third_party_org_registered" type="text"></label>
+                                <label class="form-field"><span>法定代表人／负责人</span><input id="third_party_org_representative" type="text"></label>
+                                <label class="form-field"><span>职务</span><input id="third_party_org_position" type="text"></label>
+                                <label class="form-field"><span>联系电话</span><input id="third_party_org_phone" type="text"></label>
+                                <label class="form-field"><span>统一社会信用代码</span><input id="third_party_org_credit_code" type="text"></label>
+                                <label class="form-field"><span>组织类型</span><select id="third_party_org_type"></select></label>
+                                <label class="form-field"><span>所有制性质</span><select id="third_party_org_ownership"></select></label>
+                            </div>
+                        </div>
+                    </div>
+                </details>
+
+                <details open>
+                    <summary>诉讼请求、事实与理由</summary>
+                    <div class="form-grid">
+                        <label class="form-field span-2"><span>诉讼请求</span><textarea id="claims" rows="7"></textarea></label>
+                        <label class="form-field"><span>其他费用</span><input id="other_costs" type="text" placeholder="诉讼费、鉴定费等"></label>
+                        <label class="form-field"><span>标的总额</span><input id="subject_amount" type="text"></label>
+                        <label class="form-field span-2"><span>事实与理由</span><textarea id="facts" rows="9"></textarea></label>
+                    </div>
+                </details>
+
+                <details>
+                    <summary>诉前保全、鉴定与调解</summary>
+                    <div class="form-grid">
+                        <label class="form-field"><span>是否已经诉前保全</span><select id="preservation_status"><option value="">未选择</option><option value="yes">是</option><option value="no">否</option></select></label>
+                        <label class="form-field"><span>保全法院</span><input id="preservation_court" type="text"></label>
+                        <label class="form-field"><span>保全时间</span><input id="preservation_date" type="text"></label>
+                        <label class="form-field"><span>保全案号</span><input id="preservation_case_no" type="text"></label>
+                        <label class="form-field"><span>是否申请鉴定</span><select id="appraisal_status"><option value="">未选择</option><option value="yes">是</option><option value="no">否</option></select></label>
+                        <label class="form-field"><span>鉴定事项</span><input id="appraisal_matter" type="text"></label>
+                        <label class="form-field"><span>是否了解调解方式</span><select id="mediation_awareness"><option value="">未选择</option><option>了解</option><option>不了解</option></select></label>
+                        <label class="form-field"><span>是否考虑先行调解</span><select id="mediation_choice"><option value="">未选择</option><option value="yes">是</option><option value="no">否</option><option value="unsure">暂不确定，想了解更多内容</option></select></label>
+                    </div>
+                    <p class="subsection-label">对先行调解五项好处的了解情况</p>
+                    <div class="form-grid five-selects">
+                        <label class="form-field"><span>第1项</span><select id="mediation_benefit_1"><option value="">未选择</option><option>了解</option><option>不了解</option></select></label>
+                        <label class="form-field"><span>第2项</span><select id="mediation_benefit_2"><option value="">未选择</option><option>了解</option><option>不了解</option></select></label>
+                        <label class="form-field"><span>第3项</span><select id="mediation_benefit_3"><option value="">未选择</option><option>了解</option><option>不了解</option></select></label>
+                        <label class="form-field"><span>第4项</span><select id="mediation_benefit_4"><option value="">未选择</option><option>了解</option><option>不了解</option></select></label>
+                        <label class="form-field"><span>第5项</span><select id="mediation_benefit_5"><option value="">未选择</option><option>了解</option><option>不了解</option></select></label>
+                    </div>
+                </details>
+            </section>
+        </section>
+
+        <section class="preview-section card" aria-label="模板文档预览">
+            <div class="preview-toolbar">
+                <div>
+                    <p class="step">步骤 3</p>
+                    <h2>模板格式预览</h2>
+                </div>
+                <div class="toolbar-actions">
+                    <button id="copyButton" class="button quiet" type="button">复制正文</button>
+                    <button id="printButton" class="button quiet" type="button">打印／存为PDF</button>
+                    <button id="downloadButton" class="button primary" type="button">下载可编辑 DOCX</button>
+                </div>
+            </div>
+            <p class="preview-note">当前使用“民事起诉状 · 4页”模板；填写内容过长时，Word 会自动扩展单元格。</p>
+            <div id="documentPreview" class="document-preview"></div>
+        </section>
+    </main>
+
+    <script src="./vendor/jszip.min.js"></script>
+    <script src="./vendor/docx.iife.js"></script>
+    <script src="./app.js?v=2.7.0"></script>
+</body>
+</html>
