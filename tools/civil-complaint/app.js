@@ -1,7 +1,7 @@
 (() => {
     "use strict";
 
-    const VERSION = "2.8.0";
+    const VERSION = "2.9.0";
     const DRAFT_KEY = "civil_complaint_element_form_v2";
 
     const ORGANIZATION_TYPES = [
@@ -1071,6 +1071,7 @@
         const {
             AlignmentType,
             BorderStyle,
+            CheckBox,
             Document,
             HeightRule,
             Paragraph,
@@ -1100,24 +1101,56 @@
         const contentWidth = tableWidth - labelWidth;
         const bodyFont = "Songti SC";
         const cm = (value) => Math.round(value * 567);
+        let checkboxIndex = 0;
+
+        const checkbox = (checked) => new CheckBox({
+            alias: `可勾选选项 ${++checkboxIndex}`,
+            checked,
+            checkedState: { value: "2611", font: "MS Gothic" },
+            uncheckedState: { value: "2610", font: "MS Gothic" }
+        });
+
+        const inlineChildren = (text, options = {}) => {
+            const size = options.size || 21;
+            const font = options.font || bodyFont;
+            return String(text ?? "").split(/([□☑])/g).flatMap((part) => {
+                if (part === "□" || part === "☑") return [checkbox(part === "☑")];
+                if (!part) return [];
+                return [new TextRun({
+                    text: part,
+                    size,
+                    bold: !!options.bold,
+                    font
+                })];
+            });
+        };
 
         const paragraph = (text, options = {}) => {
             const size = options.size || 21;
             const lines = String(text ?? "").split("\n");
             const children = [];
             lines.forEach((line, index) => {
-                const runOptions = {
-                    text: line,
+                if (index > 0) {
+                    children.push(new TextRun({
+                        text: "",
+                        break: 1,
+                        size,
+                        font: options.font || bodyFont
+                    }));
+                }
+                children.push(...inlineChildren(line, {
                     size,
-                    bold: !!options.bold,
+                    bold: options.bold,
                     font: options.font || bodyFont
-                };
-                if (index > 0) runOptions.break = 1;
-                children.push(new TextRun(runOptions));
+                }));
             });
             if (!children.length) children.push(new TextRun({ text: "", size, font: bodyFont }));
             return new Paragraph({
                 children,
+                run: {
+                    size: options.checkboxSize || Math.max(size + 6, 28),
+                    bold: !!options.bold
+                },
                 alignment: options.alignment || AlignmentType.LEFT,
                 keepNext: !!options.keepNext,
                 keepLines: !!options.keepLines,
@@ -1153,13 +1186,20 @@
             const optionText = (value) => value ? `${value}${box(selectedType === value)}` : "";
             const optionParagraphs = organizationOptionPairs.map(([left, right]) => new Paragraph({
                 children: [
-                    new TextRun({ text: optionText(left), size, font: bodyFont }),
-                    ...(right ? [new TextRun({
-                        children: [new Tab(), optionText(right)],
+                    ...inlineChildren(optionText(left), { size, font: bodyFont }),
+                    ...(right ? [
+                        new TextRun({
+                            children: [new Tab()],
+                            size,
+                            font: bodyFont
+                        }),
+                        ...inlineChildren(optionText(right), {
                         size,
                         font: bodyFont
-                    })] : [])
+                        })
+                    ] : [])
                 ],
+                run: { size: Math.max(size + 6, 28) },
                 keepLines: true,
                 spacing: { before: 0, after: 0, line },
                 indent: { left: 140 },
