@@ -1,7 +1,10 @@
 (() => {
     "use strict";
 
-    const VERSION = "2.10.0";
+    const VERSION = "2.11.0";
+    const SITE_TITLE = "LEXA·I｜法律智能工作系统";
+    const SITE_DESCRIPTION = "程序、证据与规范，在一处清晰展开。";
+    const SITE_URL = "https://www.lexa-i.com/";
     const DRAFT_KEY = "civil_complaint_element_form_v2";
     const DEFAULT_FORM_VALUES = {
         other_costs: "无",
@@ -137,12 +140,54 @@
         $("downloadButton").addEventListener("click", downloadDocx);
         $("printButton").addEventListener("click", () => window.print());
         $("copyButton").addEventListener("click", copyComplaintText);
+        $("siteShareButton").addEventListener("click", shareSite);
 
         document.querySelectorAll("input, textarea, select").forEach((control) => {
             if (control.id === "sourceText" || control.id === "sourceFile") return;
             control.addEventListener("input", handleFormChange);
             control.addEventListener("change", handleFormChange);
         });
+    }
+
+    async function shareSite() {
+        const button = $("siteShareButton");
+        const label = button.querySelector("span");
+        const liveRegion = $("siteShareStatus");
+        button.dataset.shareStatus = "opening";
+        label.textContent = "正在打开";
+        liveRegion.textContent = "正在打开系统分享";
+
+        if (navigator.share) {
+            try {
+                await navigator.share({
+                    title: SITE_TITLE,
+                    text: SITE_DESCRIPTION,
+                    url: SITE_URL
+                });
+                button.dataset.shareStatus = "shared";
+                label.textContent = "已分享";
+                liveRegion.textContent = "LEXA·I 网站分享完成";
+                return;
+            } catch (error) {
+                if (error && error.name === "AbortError") {
+                    button.dataset.shareStatus = "cancelled";
+                    label.textContent = "已取消";
+                    liveRegion.textContent = "已取消分享";
+                    return;
+                }
+            }
+        }
+
+        try {
+            await navigator.clipboard.writeText(`${SITE_TITLE}\n${SITE_DESCRIPTION}\n${SITE_URL}`);
+            button.dataset.shareStatus = "copied";
+            label.textContent = "已复制";
+            liveRegion.textContent = "LEXA·I 网站信息已复制";
+        } catch {
+            button.dataset.shareStatus = "failed";
+            label.textContent = "分享失败";
+            liveRegion.textContent = "分享失败，请手工复制网站地址";
+        }
     }
 
     function handleFormChange(event) {

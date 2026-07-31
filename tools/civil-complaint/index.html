@@ -6,10 +6,17 @@
     <meta name="color-scheme" content="light">
     <title>要素式诉状转换工具｜LEXA·I</title>
     <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
-    <link rel="stylesheet" href="./app.css?v=2.10.0">
+    <link rel="stylesheet" href="./app.css?v=2.11.0">
 </head>
 <body>
-    <a class="lexa-back-link" href="../../platforms/">← 返回 LEXA·I 法律工具</a>
+    <nav class="lexa-tool-bar" aria-label="工具导航">
+        <a class="lexa-back-link" href="../../">← 返回 LEXA·I 主页</a>
+        <button id="siteShareButton" class="lexa-site-share" type="button" aria-label="分享 LEXA·I 网站">
+            <span>分享</span>
+            <span aria-hidden="true">↗</span>
+        </button>
+        <span id="siteShareStatus" class="visually-hidden" aria-live="polite"></span>
+    </nav>
     <header class="app-header">
         <div>
             <p class="eyebrow">本地处理 · 不上传案件材料</p>
@@ -272,6 +279,6 @@
 
     <script src="./vendor/jszip.min.js"></script>
     <script src="./vendor/docx.iife.js"></script>
-    <script src="./app.js?v=2.10.0"></script>
+    <script src="./app.js?v=2.11.0"></script>
 </body>
 </html>

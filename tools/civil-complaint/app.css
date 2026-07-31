@@ -48,10 +48,32 @@ button {
     border: 0;
 }
 
-.lexa-back-link {
+.visually-hidden {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    padding: 0 !important;
+    margin: -1px !important;
+    overflow: hidden !important;
+    clip: rect(0 0 0 0) !important;
+    white-space: nowrap !important;
+    border: 0 !important;
+}
+
+.lexa-tool-bar {
     width: min(1500px, calc(100% - 40px));
-    margin: 18px auto 0;
-    display: block;
+    min-height: 62px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    border-bottom: 1px solid var(--line);
+}
+
+.lexa-back-link {
+    display: inline-flex;
+    align-items: center;
     color: var(--muted);
     font-size: 13px;
     font-weight: 650;
@@ -63,6 +85,32 @@ button {
     color: var(--accent-dark);
     text-decoration: underline;
     text-underline-offset: 4px;
+}
+
+.lexa-site-share {
+    min-height: 40px;
+    padding: 0 15px;
+    display: inline-flex;
+    align-items: center;
+    gap: 18px;
+    color: #fff;
+    background: var(--ink);
+    border: 1px solid var(--ink);
+    border-radius: 999px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 700;
+    transition: color 160ms ease, background 160ms ease, transform 160ms ease;
+}
+
+.lexa-site-share:hover,
+.lexa-site-share:focus-visible {
+    color: var(--ink);
+    background: #fff;
+}
+
+.lexa-site-share:active {
+    transform: scale(0.97);
 }
 
 .app-header {
